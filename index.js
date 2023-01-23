@@ -17,8 +17,10 @@ const storage = multer.diskStorage({
  
 })
 
+let maxSize = 1 * 1024 * 1024
 const upload = multer({
     storage: storage,
+   
 
     fileFilter: function(req, file, cb){
 
@@ -28,11 +30,11 @@ const upload = multer({
             console.log('arquivo não permitido')
             return cb(new Error('Only images are allowed'))
         }else{
-            console.log('arquivo passou')
+            
             cb(null, true) 
         }       
     
-    }
+    }, limits: {fileSize: maxSize}
 }).single('file')
 
 
@@ -44,13 +46,16 @@ app.get('/', (req, res)=>{
         upload(req,res, function(err){
             if(err instanceof multer.MulterError){
                 // A Multer error occurred when uploading
+                res.status(400)
                 res.send(err)
             }else if(err){
                 // An unknow error occurred when uploading
+                res.status(400)
                 res.send(err)
             }else{
                  // Everithing went fine
                console.log(req.file)
+               res.status(200)
                res.send(' Arquivo enviado com sucesso!')
 
             }
